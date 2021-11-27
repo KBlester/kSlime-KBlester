@@ -1,0 +1,86 @@
+#
+# Criador: KBlester
+#
+#
+# Permissão all: kSlime.all
+#
+
+
+
+
+
+command /kSlime [<text>] [<text>]:
+    trigger:
+        if player has permission "kSlime.all":
+            if arg 1 is not set:
+                player command "kSlime ajuda"
+                stop
+            if arg 1 is "ajuda":
+                send ""
+                send "&eAjuda"
+                send ""
+                send "&2/kSlime adicionar &7[Mundo]"
+                send "&2/kSlime remover &7[Mundo]"
+                send "&2/kSlime list"
+                send "&2/kSlime clear &7[Limpar a lista]"
+                send ""
+                stop
+            if arg 1 is "add" or "adicionar":
+                if arg 2 is set:
+                    if {Mundo.Slime.%arg 2%} is not set:
+                        send "&aMundo adicionado com sucesso!"
+                        set {Mundo.Slime.%arg 2%} to "%arg 2%"
+                        add arg 2 to {Mundo.Slime::*}
+                        stop
+                    else:
+                        send "&cEste mundo já foi adicionado."
+                        stop
+                else:
+                    send "&cErro! cite um mundo para adicionar na lista de mundos permitidos para o uso de slimes"
+                    stop
+            if arg 1 is "remove" or "remover":
+                if arg 2 is set:
+                    if {Mundo.Slime.%arg 2%} is set:
+                        send "&cO mundo foi removido da lista."
+                        delete {Mundo.Slime.%arg 2%}
+                        remove arg 2 from {Mundo.Slime::*}
+                        stop
+                    else:
+                        send "&cEste mundo não foi adicionado."
+                        stop
+                else:
+                    send "&cErro! cite um mundo para remover da lista de mundos permitidos para o uso de slimes"
+                    stop
+            if arg 1 is "List":
+                if amount of {Mundo.Slime::*} > 0:
+                    send "&2Encontrado: %amount of {Mundo.Slime::*}%"
+                    loop {Mundo.Slime::*}:
+                        send "&1* &7%loop-value%"
+                else:
+                    send "&cNada encontrado"
+                    stop
+            if arg 1 is "Clear":
+                send "&aVocê limpou a lista de slime"
+                clear {Mundo.Slime::*}
+                stop
+        else:
+            send ""
+            send "&fSkript: &2kSlime &7[1.0]"
+            send "&fCriadores: &7ReFlexoo &fe &7uDiego" to player
+            send ""
+            send json "&eClique &lAQUI &epara adquirir!" open "https://discord.gg/Sse8V34TeV" to player
+            send ""
+            stop
+
+on step on 165:
+    loop {Mundo.Slime::*}:
+        if player's world is "%loop-value%":
+            push the player upwards at speed 2.0
+            push the player forwards at speed 1.0
+            set {Slime.%player%} to true
+
+on damage:
+    damage cause is fall:
+    if {Slime.%victim%} is set:
+        cancel event
+        delete {Slime.%victim%}
